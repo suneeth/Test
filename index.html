@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AxCS Insights</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    background: #1B3A6B;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header h1  { font-size: 18px; font-weight: 600; }
+  .header p   { font-size: 12px; color: #B0C4DE; }
+  .logo {
+    width: 36px; height: 36px;
+    background: #E87722;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4CAF50; display: inline-block; margin-right: 6px; }
+  .status-text { font-size: 12px; color: #B0C4DE; }
+
+  /* Login */
+  #login-panel { flex: 1; display: flex; align-items: center; justify-content: center; }
+  .login-card { background: white; border-radius: 12px; padding: 40px; width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+  .login-card h2 { color: #1B3A6B; margin-bottom: 8px; }
+  .login-card p  { color: #666; font-size: 14px; margin-bottom: 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+  .form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .form-group input:focus { border-color: #1B3A6B; }
+  .login-btn { width: 100%; padding: 12px; background: #1B3A6B; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .login-btn:hover { background: #2E5FA3; }
+  .login-btn:disabled { background: #999; cursor: not-allowed; }
+  .login-error { color: #C62828; font-size: 13px; margin-top: 10px; display: none; }
+
+  /* Chat */
+  #chat-panel { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+  .toolbar { background: white; border-bottom: 1px solid #e0e0e0; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .toolbar-left { display: flex; align-items: center; gap: 8px; }
+  .user-badge { background: #E87722; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .clear-btn { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: #666; }
+  .clear-btn:hover { background: #f5f5f5; }
+  .logout-btn { background: none; border: 1px solid #C62828; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: #C62828; }
+  .logout-btn:hover { background: #fff5f5; }
+
+  .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  .welcome { text-align: center; padding: 40px 20px; color: #666; }
+  .welcome h3 { color: #1B3A6B; margin-bottom: 8px; }
+  .welcome p  { font-size: 14px; margin-bottom: 20px; }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 600px; margin: 0 auto; }
+  .suggestion-chip { background: white; border: 1px solid #1B3A6B; color: #1B3A6B; padding: 8px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .suggestion-chip:hover { background: #1B3A6B; color: white; }
+
+  .message { display: flex; flex-direction: column; max-width: 88%; }
+  .message.user      { align-self: flex-end;   align-items: flex-end; }
+  .message.assistant { align-self: flex-start; align-items: flex-start; }
+
+  .bubble { padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.7; word-break: break-word; }
+  .message.user .bubble { background: #1B3A6B; color: white; border-bottom-right-radius: 4px; }
+  .message.assistant .bubble { background: white; color: #333; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  /* ── Code formatting ── */
+  .bubble pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 10px 0;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Consolas', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    border-left: 3px solid #E87722;
+  }
+  .bubble code {
+    font-family: 'Cascadia Code', 'Consolas', 'Fira Code', monospace;
+    font-size: 12.5px;
+  }
+  /* inline code — only inside assistant bubbles */
+  .message.assistant .bubble code:not(pre code) {
+    background: #f0f0f0;
+    color: #C62828;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  /* code inside pre stays unstyled */
+  .bubble pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+  /* copy button on code blocks */
+  .code-wrapper { position: relative; }
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: #333;
+    color: #ccc;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .code-wrapper:hover .copy-btn { opacity: 1; }
+  .copy-btn.copied { color: #4CAF50; }
+
+  /* bold / lists inside bubble */
+  .bubble strong { font-weight: 700; }
+  .bubble ul, .bubble ol { margin: 6px 0 6px 20px; }
+  .bubble li { margin: 3px 0; }
+  .bubble p  { margin: 4px 0; }
+  .bubble h3, .bubble h4 { margin: 10px 0 4px; color: #1B3A6B; }
+
+  .message-meta { font-size: 11px; color: #999; margin-top: 4px; padding: 0 4px; }
+  .mode-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-right: 6px; }
+  .mode-normal   { background: #E8F5E9; color: #2E7D32; }
+  .mode-agent    { background: #FFF3E0; color: #E65100; }
+  .mode-fallback { background: #FCE4EC; color: #C62828; }
+
+  /* typing */
+  .typing { display: flex; align-items: center; gap: 4px; padding: 12px 16px; background: white; border: 1px solid #e0e0e0; border-radius: 12px; border-bottom-left-radius: 4px; width: fit-content; }
+  .dot { width: 7px; height: 7px; background: #999; border-radius: 50%; animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+
+  /* input */
+  .input-area { background: white; border-top: 1px solid #e0e0e0; padding: 16px 20px; flex-shrink: 0; }
+  .input-row  { display: flex; gap: 10px; align-items: flex-end; max-width: 900px; margin: 0 auto; }
+  #question-input { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 24px; font-size: 14px; font-family: inherit; resize: none; outline: none; max-height: 120px; line-height: 1.5; transition: border-color 0.2s; }
+  #question-input:focus { border-color: #1B3A6B; }
+  .send-btn { width: 44px; height: 44px; background: #1B3A6B; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+  .send-btn:hover    { background: #2E5FA3; }
+  .send-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .input-hint { text-align: center; font-size: 11px; color: #999; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">AC</div>
+    <div>
+      <h1>AxCS Insights</h1>
+      <p>Color Formulation Codebase Intelligence</p>
+    </div>
+  </div>
+  <div>
+    <span class="status-dot" id="status-dot"></span>
+    <span class="status-text" id="status-text">Connecting...</span>
+  </div>
+</div>
+
+<!-- Login -->
+<div id="login-panel">
+  <div class="login-card">
+    <h2>Sign In</h2>
+    <p>Use your Axalta network credentials to access AxCS Insights.</p>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="axbl1138" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" id="login-btn" onclick="login()">Sign In</button>
+    <div class="login-error" id="login-error">Invalid credentials. Please try again.</div>
+  </div>
+</div>
+
+<!-- Chat -->
+<div id="chat-panel">
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <span class="user-badge" id="user-badge"></span>
+      <span style="font-size:12px;color:#666;" id="history-count">0 messages</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="clear-btn" onclick="clearHistory()">Clear Chat</button>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <h3>Welcome to AxCS Insights</h3>
+      <p>Ask anything about the AxCS Color Formulation codebase.</p>
+      <div class="suggestions">
+        <div class="suggestion-chip" onclick="askSuggestion(this)">What are the steps in computer conversion?</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">What is VCI and how is it used?</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">How does PSA generate a formula?</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">What does QltyTrgtSlctn do?</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">Explain the balancing engine</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">What is mass tint replacement?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea id="question-input" rows="1"
+        placeholder="Ask about the AxCS codebase..."
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendQuestion()" title="Send">➤</button>
+    </div>
+    <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+  </div>
+</div>
+
+<script>
+  const API_BASE   = 'https://localhost:54664';
+  const TOKEN_URL  = 'https://axcs-api-prod.axaltacs.net/Token';
+  const MAX_HISTORY = 20;
+
+  let bearerToken = sessionStorage.getItem('axcs_token') || '';
+  let username    = sessionStorage.getItem('axcs_user')  || '';
+  let history     = [];
+
+  window.onload = () => {
+    if (bearerToken) showChat();
+    else document.getElementById('username').focus();
+  };
+
+  // ── Login ──────────────────────────────────────────────────────────────────
+  async function login() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+    const btn  = document.getElementById('login-btn');
+    const err  = document.getElementById('login-error');
+    if (!user || !pass) return;
+    btn.disabled = true; btn.textContent = 'Signing in...'; err.style.display = 'none';
+    try {
+      const res = await fetch(TOKEN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `grant_type=password&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      bearerToken = data.access_token; username = user;
+      sessionStorage.setItem('axcs_token', bearerToken);
+      sessionStorage.setItem('axcs_user',  username);
+      showChat();
+    } catch {
+      err.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    const lp = document.getElementById('login-panel');
+    if (lp.style.display !== 'none' && e.key === 'Enter' &&
+        (document.activeElement.id === 'username' || document.activeElement.id === 'password'))
+      login();
+  });
+
+  function showChat() {
+    document.getElementById('login-panel').style.display = 'none';
+    document.getElementById('chat-panel').style.display  = 'flex';
+    document.getElementById('user-badge').textContent    = username;
+    document.getElementById('status-dot').style.background = '#4CAF50';
+    document.getElementById('status-text').textContent   = 'Connected';
+    document.getElementById('question-input').focus();
+  }
+
+  function logout() {
+    sessionStorage.clear(); bearerToken = ''; username = ''; history = [];
+    document.getElementById('chat-panel').style.display  = 'none';
+    document.getElementById('login-panel').style.display = 'flex';
+    document.getElementById('password').value = '';
+    document.getElementById('username').focus();
+  }
+
+  // ── Send ───────────────────────────────────────────────────────────────────
+  async function sendQuestion() {
+    const input    = document.getElementById('question-input');
+    const question = input.value.trim();
+    if (!question) return;
+    const sendBtn = document.getElementById('send-btn');
+    sendBtn.disabled = true; input.value = ''; input.style.height = 'auto';
+    hideWelcome();
+    addUserMessage(question);
+    const typing = addTypingIndicator();
+    try {
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${bearerToken}` },
+        body: JSON.stringify({ question, history: history.slice(-3) })
+      });
+      typing.remove();
+      if (res.status === 401) { addErrorMessage('Session expired. Please sign in again.'); logout(); return; }
+      if (!res.ok) { addErrorMessage(`Error ${res.status}. Please try again.`); return; }
+      const data   = await res.json();
+      const answer = data.answer || 'No answer returned.';
+      const mode   = data.mode   || '';
+      addAssistantMessage(answer, mode);
+      history.push({ question, answer });
+      if (history.length > MAX_HISTORY) history.shift();
+      updateHistoryCount();
+    } catch {
+      typing.remove();
+      addErrorMessage('Connection error. Is the API running?');
+    } finally {
+      sendBtn.disabled = false; input.focus();
+    }
+  }
+
+  function askSuggestion(el) { document.getElementById('question-input').value = el.textContent; sendQuestion(); }
+  function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } }
+  function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+
+  // ── Markdown + code formatter ──────────────────────────────────────────────
+  function formatAnswer(text) {
+    // 1. Escape HTML first (on raw text)
+    let html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // 2. Fenced code blocks ```lang\n...\n```
+    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+      const label = lang ? `<span style="color:#E87722;font-size:11px;font-weight:600;">${lang}</span>` : '';
+      return `<div class="code-wrapper">${label}<pre><code>${code.trimEnd()}</code></pre><button class="copy-btn" onclick="copyCode(this)">copy</button></div>`;
+    });
+
+    // 3. Inline code `...`
+    html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+    // 4. Bold **text**
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // 5. Headers ### and ####
+    html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+    html = html.replace(/^### (.+)$/gm,  '<h3>$1</h3>');
+
+    // 6. Bullet lists (lines starting with - or •)
+    html = html.replace(/^[\-•] (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>(\n|$))+/g, m => `<ul>${m}</ul>`);
+
+    // 7. Numbered lists
+    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+    // 8. Line breaks (outside pre blocks) — preserve \n
+    // Split on pre blocks to avoid touching code
+    const parts = html.split(/(<div class="code-wrapper">[\s\S]*?<\/div>)/);
+    html = parts.map((part, i) => {
+      if (i % 2 === 1) return part; // code block — leave alone
+      return part.replace(/\n/g, '<br>');
+    }).join('');
+
+    return html;
+  }
+
+  function copyCode(btn) {
+    const pre  = btn.previousElementSibling;
+    const text = pre.querySelector('code')?.innerText || pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ── Message helpers ────────────────────────────────────────────────────────
+  function hideWelcome() { const w = document.getElementById('welcome'); if (w) w.remove(); }
+
+  function addUserMessage(text) {
+    const c = document.getElementById('messages');
+    const d = document.createElement('div');
+    d.className = 'message user';
+    d.innerHTML = `<div class="bubble">${escHtml(text)}</div><div class="message-meta">${timeNow()}</div>`;
+    c.appendChild(d); scrollBottom();
+  }
+
+  function addAssistantMessage(text, mode) {
+    const c = document.getElementById('messages');
+    const d = document.createElement('div');
+    d.className = 'message assistant';
+    const modeClass = mode ? `mode-${mode.replace(/[^a-z]/g,'')}` : '';
+    const badge = mode ? `<span class="mode-badge ${modeClass}">${mode}</span>` : '';
+    d.innerHTML = `<div class="bubble">${formatAnswer(text)}</div><div class="message-meta">${badge}${timeNow()}</div>`;
+    c.appendChild(d); scrollBottom();
+  }
+
+  function addErrorMessage(text) {
+    const c = document.getElementById('messages');
+    const d = document.createElement('div');
+    d.className = 'message assistant';
+    d.innerHTML = `<div class="bubble" style="border-color:#C62828;color:#C62828;">⚠ ${escHtml(text)}</div>`;
+    c.appendChild(d); scrollBottom();
+  }
+
+  function addTypingIndicator() {
+    const c = document.getElementById('messages');
+    const d = document.createElement('div');
+    d.className = 'message assistant';
+    d.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    c.appendChild(d); scrollBottom(); return d;
+  }
+
+  function clearHistory() {
+    history = []; updateHistoryCount();
+    const c = document.getElementById('messages');
+    c.innerHTML = '';
+    const w = document.createElement('div');
+    w.id = 'welcome'; w.className = 'welcome';
+    w.innerHTML = '<h3>Chat cleared</h3><p>Start a new conversation below.</p>';
+    c.appendChild(w);
+  }
+
+  function updateHistoryCount() {
+    document.getElementById('history-count').textContent =
+      `${history.length} message${history.length !== 1 ? 's' : ''}`;
+  }
+
+  function scrollBottom() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }
+  function timeNow() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+</script>
+</body>
+</html>

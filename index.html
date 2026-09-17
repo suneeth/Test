@@ -8,189 +8,520 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f0f2f5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f5f5;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    color: #333;
   }
 
+  /* ── Header — matches AxCS black bar ── */
   .header {
-    background: #1B3A6B;
+    background: #1a1a1a;
     color: white;
-    padding: 12px 20px;
+    padding: 0 20px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
+    border-bottom: 3px solid #E87722;
   }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  .header h1  { font-size: 18px; font-weight: 600; }
-  .header p   { font-size: 12px; color: #B0C4DE; }
-  .logo {
-    width: 36px; height: 36px;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: white;
+  }
+  .header-subtitle {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 1px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .axalta-logo {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .axalta-logo-box {
     background: #E87722;
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+    color: white;
+    letter-spacing: -1px;
+    clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%);
+    padding-right: 4px;
   }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4CAF50; display: inline-block; margin-right: 6px; }
-  .status-text { font-size: 12px; color: #B0C4DE; }
+  .axalta-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-user {
+    font-size: 12px;
+    color: #ccc;
+  }
+  .header-signout {
+    font-size: 12px;
+    color: #E87722;
+    background: none;
+    border: 1px solid #E87722;
+    padding: 3px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .header-signout:hover { background: #E87722; color: white; }
 
-  /* Login */
-  #login-panel { flex: 1; display: flex; align-items: center; justify-content: center; }
-  .login-card { background: white; border-radius: 12px; padding: 40px; width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-  .login-card h2 { color: #1B3A6B; margin-bottom: 8px; }
-  .login-card p  { color: #666; font-size: 14px; margin-bottom: 24px; }
-  .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
-  .form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
-  .form-group input:focus { border-color: #1B3A6B; }
-  .login-btn { width: 100%; padding: 12px; background: #1B3A6B; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .login-btn:hover { background: #2E5FA3; }
-  .login-btn:disabled { background: #999; cursor: not-allowed; }
-  .login-error { color: #C62828; font-size: 13px; margin-top: 10px; display: none; }
+  /* ── Warning bar — like AxCS ── */
+  .warning-bar {
+    background: #2a2a2a;
+    color: #aaa;
+    font-size: 11px;
+    padding: 4px 20px;
+    border-bottom: 1px solid #444;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
 
-  /* Chat */
-  #chat-panel { flex: 1; display: none; flex-direction: column; overflow: hidden; }
-  .toolbar { background: white; border-bottom: 1px solid #e0e0e0; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  .toolbar-left { display: flex; align-items: center; gap: 8px; }
-  .user-badge { background: #E87722; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-  .clear-btn { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: #666; }
-  .clear-btn:hover { background: #f5f5f5; }
-  .logout-btn { background: none; border: 1px solid #C62828; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: #C62828; }
-  .logout-btn:hover { background: #fff5f5; }
+  /* ── Login ── */
+  #login-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+  }
+  .login-wrapper {
+    display: flex;
+    gap: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    width: 780px;
+  }
+  .login-left {
+    background: #1a1a1a;
+    color: white;
+    padding: 40px 36px;
+    width: 340px;
+    flex-shrink: 0;
+  }
+  .login-left h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #E87722;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 12px;
+  }
+  .access-section { margin-bottom: 20px; }
+  .access-section h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: #E87722;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .access-section p {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.7;
+  }
 
-  .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .login-right {
+    background: white;
+    padding: 40px 36px;
+    flex: 1;
+  }
+  .login-right h3 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #333;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #E87722;
+    padding-bottom: 10px;
+    display: inline-block;
+  }
+  .field-group { margin-bottom: 16px; }
+  .field-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  .field-group input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-top: 1px solid #aaa;
+    font-size: 13px;
+    outline: none;
+    background: #fafafa;
+    border-radius: 0;
+  }
+  .field-group input:focus {
+    border-color: #E87722;
+    background: white;
+    box-shadow: 0 0 0 2px rgba(232,119,34,0.15);
+  }
+  .please-wait-btn {
+    width: 100%;
+    padding: 10px;
+    background: #E87722;
+    color: white;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  .please-wait-btn:hover    { background: #d06010; }
+  .please-wait-btn:disabled { background: #ccc; cursor: not-allowed; }
+  .login-error {
+    color: #C62828;
+    font-size: 12px;
+    margin-top: 8px;
+    display: none;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
 
-  .welcome { text-align: center; padding: 40px 20px; color: #666; }
-  .welcome h3 { color: #1B3A6B; margin-bottom: 8px; }
-  .welcome p  { font-size: 14px; margin-bottom: 20px; }
-  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 600px; margin: 0 auto; }
-  .suggestion-chip { background: white; border: 1px solid #1B3A6B; color: #1B3A6B; padding: 8px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-  .suggestion-chip:hover { background: #1B3A6B; color: white; }
+  /* ── Chat layout ── */
+  #chat-panel {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
+  /* toolbar */
+  .toolbar {
+    background: #2a2a2a;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 1px solid #444;
+  }
+  .toolbar-left { display: flex; align-items: center; gap: 10px; }
+  .toolbar-label {
+    font-size: 11px;
+    color: #aaa;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .clear-btn {
+    background: none;
+    border: 1px solid #555;
+    color: #aaa;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .clear-btn:hover { border-color: #E87722; color: #E87722; }
+
+  /* messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #f5f5f5;
+  }
+
+  /* welcome */
+  .welcome {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+  }
+  .welcome-header {
+    background: #1a1a1a;
+    color: white;
+    display: inline-block;
+    padding: 10px 24px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 3px solid #E87722;
+  }
+  .welcome p { font-size: 13px; margin-bottom: 20px; color: #666; }
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .suggestion-chip {
+    background: white;
+    border: 1px solid #ccc;
+    border-left: 3px solid #E87722;
+    color: #333;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+  .suggestion-chip:hover {
+    background: #E87722;
+    color: white;
+    border-color: #E87722;
+  }
+
+  /* messages */
   .message { display: flex; flex-direction: column; max-width: 88%; }
   .message.user      { align-self: flex-end;   align-items: flex-end; }
   .message.assistant { align-self: flex-start; align-items: flex-start; }
 
-  .bubble { padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.7; word-break: break-word; }
-  .message.user .bubble { background: #1B3A6B; color: white; border-bottom-right-radius: 4px; }
-  .message.assistant .bubble { background: white; color: #333; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .bubble {
+    padding: 11px 15px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    word-break: break-word;
+  }
+  .message.user .bubble {
+    background: #1a1a1a;
+    color: white;
+    border-left: 3px solid #E87722;
+  }
+  .message.assistant .bubble {
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    border-left: 3px solid #E87722;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
 
-  /* ── Code formatting ── */
+  /* Code */
   .bubble pre {
-    background: #1e1e1e;
+    background: #1a1a1a;
     color: #d4d4d4;
-    border-radius: 8px;
     padding: 14px 16px;
     margin: 10px 0;
     overflow-x: auto;
-    font-family: 'Cascadia Code', 'Consolas', 'Fira Code', monospace;
-    font-size: 13px;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 12.5px;
     line-height: 1.6;
     white-space: pre;
     border-left: 3px solid #E87722;
   }
-  .bubble code {
-    font-family: 'Cascadia Code', 'Consolas', 'Fira Code', monospace;
-    font-size: 12.5px;
-  }
-  /* inline code — only inside assistant bubbles */
+  .bubble code { font-family: 'Cascadia Code','Consolas',monospace; font-size: 12.5px; }
   .message.assistant .bubble code:not(pre code) {
     background: #f0f0f0;
     color: #C62828;
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 1px 5px;
+    border: 1px solid #ddd;
   }
-  /* code inside pre stays unstyled */
-  .bubble pre code {
-    background: none;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    font-size: inherit;
-  }
-  /* copy button on code blocks */
+  .bubble pre code { background: none; color: inherit; padding: 0; border: none; font-size: inherit; }
   .code-wrapper { position: relative; }
+  .code-lang {
+    background: #E87722;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: -1px;
+  }
   .copy-btn {
     position: absolute;
     top: 8px; right: 8px;
     background: #333;
     color: #ccc;
     border: none;
-    border-radius: 4px;
     padding: 3px 8px;
     font-size: 11px;
     cursor: pointer;
     opacity: 0;
     transition: opacity 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
   .code-wrapper:hover .copy-btn { opacity: 1; }
-  .copy-btn.copied { color: #4CAF50; }
+  .copy-btn.copied { color: #E87722; }
 
-  /* bold / lists inside bubble */
   .bubble strong { font-weight: 700; }
   .bubble ul, .bubble ol { margin: 6px 0 6px 20px; }
   .bubble li { margin: 3px 0; }
-  .bubble p  { margin: 4px 0; }
-  .bubble h3, .bubble h4 { margin: 10px 0 4px; color: #1B3A6B; }
+  .bubble h3, .bubble h4 { margin: 10px 0 4px; color: #1a1a1a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-  .message-meta { font-size: 11px; color: #999; margin-top: 4px; padding: 0 4px; }
-  .mode-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-right: 6px; }
-  .mode-normal   { background: #E8F5E9; color: #2E7D32; }
-  .mode-agent    { background: #FFF3E0; color: #E65100; }
-  .mode-fallback { background: #FCE4EC; color: #C62828; }
+  .message-meta { font-size: 11px; color: #999; margin-top: 3px; padding: 0 2px; }
+  .mode-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    margin-right: 6px;
+    border: 1px solid;
+  }
+  .mode-normal   { border-color: #2E7D32; color: #2E7D32; }
+  .mode-agent    { border-color: #E87722; color: #E87722; }
+  .mode-fallback { border-color: #C62828; color: #C62828; }
 
   /* typing */
-  .typing { display: flex; align-items: center; gap: 4px; padding: 12px 16px; background: white; border: 1px solid #e0e0e0; border-radius: 12px; border-bottom-left-radius: 4px; width: fit-content; }
-  .dot { width: 7px; height: 7px; background: #999; border-radius: 50%; animation: bounce 1.2s infinite; }
+  .typing {
+    display: flex; align-items: center; gap: 4px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-left: 3px solid #E87722;
+    width: fit-content;
+  }
+  .dot { width: 6px; height: 6px; background: #E87722; border-radius: 50%; animation: bounce 1.2s infinite; }
   .dot:nth-child(2) { animation-delay: 0.2s; }
   .dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+  @keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-5px); } }
 
   /* input */
-  .input-area { background: white; border-top: 1px solid #e0e0e0; padding: 16px 20px; flex-shrink: 0; }
-  .input-row  { display: flex; gap: 10px; align-items: flex-end; max-width: 900px; margin: 0 auto; }
-  #question-input { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 24px; font-size: 14px; font-family: inherit; resize: none; outline: none; max-height: 120px; line-height: 1.5; transition: border-color 0.2s; }
-  #question-input:focus { border-color: #1B3A6B; }
-  .send-btn { width: 44px; height: 44px; background: #1B3A6B; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
-  .send-btn:hover    { background: #2E5FA3; }
-  .send-btn:disabled { background: #ccc; cursor: not-allowed; }
-  .input-hint { text-align: center; font-size: 11px; color: #999; margin-top: 8px; }
+  .input-area {
+    background: #2a2a2a;
+    padding: 12px 20px;
+    flex-shrink: 0;
+    border-top: 1px solid #444;
+  }
+  .input-row { display: flex; gap: 8px; align-items: flex-end; max-width: 960px; margin: 0 auto; }
+  #question-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #555;
+    background: #1a1a1a;
+    color: white;
+    font-size: 13.5px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    max-height: 120px;
+    line-height: 1.5;
+    border-radius: 0;
+  }
+  #question-input::placeholder { color: #666; }
+  #question-input:focus { border-color: #E87722; }
+  .send-btn {
+    padding: 10px 20px;
+    background: #E87722;
+    color: white;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    align-self: stretch;
+    transition: background 0.2s;
+  }
+  .send-btn:hover    { background: #d06010; }
+  .send-btn:disabled { background: #555; cursor: not-allowed; }
+  .input-hint { text-align: center; font-size: 10px; color: #555; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  /* version bar */
+  .version-bar {
+    background: #111;
+    color: #555;
+    font-size: 10px;
+    padding: 3px 16px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <div class="header">
   <div class="header-left">
-    <div class="logo">AC</div>
+    <div class="axalta-logo">
+      <div class="axalta-logo-box">A</div>
+      <span class="axalta-text">Axalta</span>
+    </div>
     <div>
-      <h1>AxCS Insights</h1>
-      <p>Color Formulation Codebase Intelligence</p>
+      <div class="header-title">AxCS Insights</div>
+      <div class="header-subtitle">Color Formulation Codebase Intelligence</div>
     </div>
   </div>
-  <div>
-    <span class="status-dot" id="status-dot"></span>
-    <span class="status-text" id="status-text">Connecting...</span>
+  <div class="header-right">
+    <span class="header-user" id="header-user"></span>
+    <button class="header-signout" id="signout-btn" onclick="logout()" style="display:none">Sign Out</button>
   </div>
 </div>
 
+<!-- Warning bar -->
+<div class="warning-bar">Warning: Private Computer System &nbsp;|&nbsp; Authorized Access Only</div>
+
 <!-- Login -->
 <div id="login-panel">
-  <div class="login-card">
-    <h2>Sign In</h2>
-    <p>Use your Axalta network credentials to access AxCS Insights.</p>
-    <div class="form-group">
-      <label>Username</label>
-      <input type="text" id="username" placeholder="axbl1138" autocomplete="username" />
+  <div class="login-wrapper">
+    <div class="login-left">
+      <h2>Access Policy</h2>
+      <div class="access-section">
+        <h3>Authorized Access</h3>
+        <p>Authorized users must use company computer assets in accordance with applicable law and company policies.</p>
+      </div>
+      <div class="access-section">
+        <h3>Expectations of Privacy</h3>
+        <p>Data sent or received through this system is the property of the company and is subject to monitoring.</p>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+    <div class="login-right">
+      <h3>Use an Axalta Domain ID to Log In</h3>
+      <div class="field-group">
+        <label>User Name</label>
+        <input type="text" id="username" placeholder="axbl1138" autocomplete="username" />
+      </div>
+      <div class="field-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button class="please-wait-btn" id="login-btn" onclick="login()">Please Wait...</button>
+      <div class="login-error" id="login-error">⚠ Invalid credentials. Please try again.</div>
     </div>
-    <button class="login-btn" id="login-btn" onclick="login()">Sign In</button>
-    <div class="login-error" id="login-error">Invalid credentials. Please try again.</div>
   </div>
 </div>
 
@@ -198,18 +529,14 @@
 <div id="chat-panel">
   <div class="toolbar">
     <div class="toolbar-left">
-      <span class="user-badge" id="user-badge"></span>
-      <span style="font-size:12px;color:#666;" id="history-count">0 messages</span>
+      <span class="toolbar-label" id="history-count">0 messages</span>
     </div>
-    <div style="display:flex;gap:8px;">
-      <button class="clear-btn" onclick="clearHistory()">Clear Chat</button>
-      <button class="logout-btn" onclick="logout()">Sign Out</button>
-    </div>
+    <button class="clear-btn" onclick="clearHistory()">Clear Chat</button>
   </div>
 
   <div class="messages" id="messages">
     <div class="welcome" id="welcome">
-      <h3>Welcome to AxCS Insights</h3>
+      <div class="welcome-header">AxCS Insights — Codebase Intelligence</div>
       <p>Ask anything about the AxCS Color Formulation codebase.</p>
       <div class="suggestions">
         <div class="suggestion-chip" onclick="askSuggestion(this)">What are the steps in computer conversion?</div>
@@ -218,6 +545,8 @@
         <div class="suggestion-chip" onclick="askSuggestion(this)">What does QltyTrgtSlctn do?</div>
         <div class="suggestion-chip" onclick="askSuggestion(this)">Explain the balancing engine</div>
         <div class="suggestion-chip" onclick="askSuggestion(this)">What is mass tint replacement?</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">What are the PSA ingredient roles?</div>
+        <div class="suggestion-chip" onclick="askSuggestion(this)">How does AQT use BNN predictions?</div>
       </div>
     </div>
   </div>
@@ -228,15 +557,17 @@
         placeholder="Ask about the AxCS codebase..."
         onkeydown="handleKey(event)"
         oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendQuestion()" title="Send">➤</button>
+      <button class="send-btn" id="send-btn" onclick="sendQuestion()">Send</button>
     </div>
-    <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+    <div class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
   </div>
 </div>
 
+<div class="version-bar" id="version-bar">VERSION — AxCS Insights v1.0</div>
+
 <script>
-  const API_BASE   = 'https://localhost:54664';
-  const TOKEN_URL  = 'https://axcs-api-prod.axaltacs.net/Token';
+  const API_BASE    = 'https://localhost:54664';
+  const TOKEN_URL   = 'https://axcs-api-prod.axaltacs.net/Token';
   const MAX_HISTORY = 20;
 
   let bearerToken = sessionStorage.getItem('axcs_token') || '';
@@ -244,6 +575,8 @@
   let history     = [];
 
   window.onload = () => {
+    // Login button starts as "Please Wait..." → change to "Sign In"
+    document.getElementById('login-btn').textContent = 'Sign In';
     if (bearerToken) showChat();
     else document.getElementById('username').focus();
   };
@@ -255,7 +588,7 @@
     const btn  = document.getElementById('login-btn');
     const err  = document.getElementById('login-error');
     if (!user || !pass) return;
-    btn.disabled = true; btn.textContent = 'Signing in...'; err.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Please Wait...'; err.style.display = 'none';
     try {
       const res = await fetch(TOKEN_URL, {
         method: 'POST',
@@ -282,11 +615,10 @@
   });
 
   function showChat() {
-    document.getElementById('login-panel').style.display = 'none';
-    document.getElementById('chat-panel').style.display  = 'flex';
-    document.getElementById('user-badge').textContent    = username;
-    document.getElementById('status-dot').style.background = '#4CAF50';
-    document.getElementById('status-text').textContent   = 'Connected';
+    document.getElementById('login-panel').style.display  = 'none';
+    document.getElementById('chat-panel').style.display   = 'flex';
+    document.getElementById('header-user').textContent    = username.toUpperCase();
+    document.getElementById('signout-btn').style.display  = 'inline';
     document.getElementById('question-input').focus();
   }
 
@@ -294,7 +626,10 @@
     sessionStorage.clear(); bearerToken = ''; username = ''; history = [];
     document.getElementById('chat-panel').style.display  = 'none';
     document.getElementById('login-panel').style.display = 'flex';
+    document.getElementById('signout-btn').style.display = 'none';
+    document.getElementById('header-user').textContent   = '';
     document.getElementById('password').value = '';
+    document.getElementById('login-btn').textContent = 'Sign In';
     document.getElementById('username').focus();
   }
 
@@ -336,45 +671,30 @@
   function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuestion(); } }
   function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 
-  // ── Markdown + code formatter ──────────────────────────────────────────────
+  // ── Formatter ──────────────────────────────────────────────────────────────
   function formatAnswer(text) {
-    // 1. Escape HTML first (on raw text)
-    let html = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-    // 2. Fenced code blocks ```lang\n...\n```
+    // Fenced code blocks
     html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-      const label = lang ? `<span style="color:#E87722;font-size:11px;font-weight:600;">${lang}</span>` : '';
-      return `<div class="code-wrapper">${label}<pre><code>${code.trimEnd()}</code></pre><button class="copy-btn" onclick="copyCode(this)">copy</button></div>`;
+      const label = lang ? `<div class="code-lang">${lang}</div>` : '';
+      return `<div class="code-wrapper">${label}<pre><code>${code.trimEnd()}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>`;
     });
 
-    // 3. Inline code `...`
+    // Inline code
     html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-
-    // 4. Bold **text**
+    // Bold
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-    // 5. Headers ### and ####
+    // Headers
     html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
     html = html.replace(/^### (.+)$/gm,  '<h3>$1</h3>');
-
-    // 6. Bullet lists (lines starting with - or •)
+    // Bullets
     html = html.replace(/^[\-•] (.+)$/gm, '<li>$1</li>');
     html = html.replace(/(<li>.*<\/li>(\n|$))+/g, m => `<ul>${m}</ul>`);
 
-    // 7. Numbered lists
-    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-
-    // 8. Line breaks (outside pre blocks) — preserve \n
-    // Split on pre blocks to avoid touching code
+    // Line breaks (skip code blocks)
     const parts = html.split(/(<div class="code-wrapper">[\s\S]*?<\/div>)/);
-    html = parts.map((part, i) => {
-      if (i % 2 === 1) return part; // code block — leave alone
-      return part.replace(/\n/g, '<br>');
-    }).join('');
-
+    html = parts.map((p, i) => i % 2 === 1 ? p : p.replace(/\n/g, '<br>')).join('');
     return html;
   }
 
@@ -382,9 +702,8 @@
     const pre  = btn.previousElementSibling;
     const text = pre.querySelector('code')?.innerText || pre.innerText;
     navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = 'copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+      btn.textContent = 'Copied!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
     });
   }
 
@@ -395,7 +714,7 @@
     const c = document.getElementById('messages');
     const d = document.createElement('div');
     d.className = 'message user';
-    d.innerHTML = `<div class="bubble">${escHtml(text)}</div><div class="message-meta">${timeNow()}</div>`;
+    d.innerHTML = `<div class="bubble">${esc(text)}</div><div class="message-meta">${timeNow()}</div>`;
     c.appendChild(d); scrollBottom();
   }
 
@@ -403,8 +722,8 @@
     const c = document.getElementById('messages');
     const d = document.createElement('div');
     d.className = 'message assistant';
-    const modeClass = mode ? `mode-${mode.replace(/[^a-z]/g,'')}` : '';
-    const badge = mode ? `<span class="mode-badge ${modeClass}">${mode}</span>` : '';
+    const mc = mode ? `mode-${mode.replace(/[^a-z]/g,'')}` : '';
+    const badge = mode ? `<span class="mode-badge ${mc}">${mode}</span>` : '';
     d.innerHTML = `<div class="bubble">${formatAnswer(text)}</div><div class="message-meta">${badge}${timeNow()}</div>`;
     c.appendChild(d); scrollBottom();
   }
@@ -413,7 +732,7 @@
     const c = document.getElementById('messages');
     const d = document.createElement('div');
     d.className = 'message assistant';
-    d.innerHTML = `<div class="bubble" style="border-color:#C62828;color:#C62828;">⚠ ${escHtml(text)}</div>`;
+    d.innerHTML = `<div class="bubble" style="border-left-color:#C62828;color:#C62828;">⚠ ${esc(text)}</div>`;
     c.appendChild(d); scrollBottom();
   }
 
@@ -431,7 +750,7 @@
     c.innerHTML = '';
     const w = document.createElement('div');
     w.id = 'welcome'; w.className = 'welcome';
-    w.innerHTML = '<h3>Chat cleared</h3><p>Start a new conversation below.</p>';
+    w.innerHTML = '<div class="welcome-header">Chat Cleared</div><p>Start a new conversation below.</p>';
     c.appendChild(w);
   }
 
@@ -442,7 +761,7 @@
 
   function scrollBottom() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }
   function timeNow() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
-  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 </script>
 </body>
 </html>
